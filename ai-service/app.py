@@ -1,10 +1,14 @@
 from flask import Flask, jsonify
 from dotenv import load_dotenv
 import os
+import time
 
 load_dotenv()
 
 app = Flask(__name__)
+
+# Track startup time
+START_TIME = time.time()
 
 # Register blueprints
 from routes.describe import describe_bp
@@ -24,10 +28,33 @@ app.register_blueprint(stream_bp)
 
 @app.route('/health', methods=['GET'])
 def health():
+    uptime_seconds = int(time.time() - START_TIME)
+    uptime_minutes = uptime_seconds // 60
+
+    try:
+        from services.chroma_client import collection
+        doc_count = collection.count()
+    except:
+        doc_count = 0
+
     return jsonify({
         "status": "ok",
         "service": "ai-service",
-        "model": "llama-3.3-70b-versatile"
+        "model": "llama-3.3-70b-versatile",
+        "uptime_seconds": uptime_seconds,
+        "uptime_minutes": uptime_minutes,
+        "chromadb_doc_count": doc_count,
+        "endpoints": [
+            "/health",
+            "/describe",
+            "/recommend",
+            "/generate-report",
+            "/generate-report/stream",
+            "/query",
+            "/ingest",
+            "/analyse-document",
+            "/batch-process"
+        ]
     }), 200
 
 if __name__ == '__main__':
