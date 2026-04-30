@@ -12,11 +12,13 @@ from routes.recommend import recommend_bp
 from routes.query import query_bp
 from routes.report import report_bp
 from routes.analyse import analyse_bp
+from routes.batch import batch_bp
 app.register_blueprint(describe_bp)
 app.register_blueprint(recommend_bp)
 app.register_blueprint(query_bp)
 app.register_blueprint(report_bp)
 app.register_blueprint(analyse_bp)
+app.register_blueprint(batch_bp)
 
 @app.route('/health', methods=['GET'])
 def health():
